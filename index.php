@@ -11,6 +11,11 @@
 	date_default_timezone_set("Pacific/Honolulu");
 	$date_append = date("Ymd");
 
+//When the list gets longer - manage partition number
+//***Cron how to determine what batch you are processing and how many batches
+//WP Data  --- circpro call only if no pubid from wp//
+//function below //
+//Refactor 1 task per function // 
 
 
 	$section_number = $_GET['section_number'];
@@ -18,7 +23,7 @@
 	
 	$time_start = microtime(true);
 
-	$url = INSERT URL; //Daily Newspaper Alert 4,513
+	$url = "---"; //Daily Newspaper Alert 4,513
 //\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\_/\
 //	1st STEP : CURL ITERABLE API 
 //	RESULT : CSV File from ITERABLE LIST
@@ -88,7 +93,6 @@
 				if($status === true) {
 					$processed_emails[] = $email;
 				}else{
-
 					$pending_emails[] = $email;
 				}
 			}else{
@@ -149,8 +153,10 @@
 
 
 
+
 	$processed_emails_2 = array();
 	$failed_emails = array();
+	$final_email_list;
 	function create_processed_list($email, $processed_email_filename, $failed_email_filename){
 		if ( !empty($email) ) {
 			global $processed_emails_2;
@@ -160,10 +166,6 @@
 			$name_id = ($subscriber['name_id']);
 			$pub_id_wp = ($subscriber['publication_id']); 
 			$account_no_wp = ($subscriber['account_number']);
-			$get_pubID_with_getCustomerAndBalance = getCustomerAndBalance($name_id,$account_no_wp);
-			$pub_id_wp_2 = $get_pubID_with_getCustomerAndBalance['subscription']['publication_id'];
-			$pub_id_length = count($pub_id_wp);
-			$pub_id_2_length = count($pub_id_wp_2);
 			if( $name_id && strlen($pub_id_wp) === 7 )  {
 				$status = isCustomerAllowed($name_id, $pub_id_wp);
 				if($status === true){
@@ -171,7 +173,9 @@
 				}else{
 					$failed_emails[] = $email;
 				}
-			}else if ( $name_id && strlen($pub_id_wp_2) === 7 ){
+			}else if ( strlen($pub_id_wp) <= 7 ){
+				$get_pubID_with_getCustomerAndBalance = getCustomerAndBalance($name_id,$account_no_wp);
+				$pub_id_wp_2 = $get_pubID_with_getCustomerAndBalance['subscription']['publication_id'];
 				$status = isCustomerAllowed($name_id, $pub_id_wp_2);
 				if($status === true){
 					$processed_emails_2[] = $email;
@@ -188,6 +192,7 @@
 
 
 		if(!empty($processed_emails_2)){
+			global $final_email_list;
 			$final_email_list = array_merge($processed_emails, $processed_emails_2);
 			create_csv_from_array($processed_email_filename, $final_email_list);
 			create_csv_from_array($failed_email_filename, $failed_emails);
@@ -200,5 +205,5 @@
 		}
 		
 	}
-
+	print_pre($final_email_list);
 ?>

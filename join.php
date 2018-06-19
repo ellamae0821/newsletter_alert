@@ -17,9 +17,9 @@
 	$time_start = microtime(true);
 
 
-	$url = API URL HERE; //Pressreader Only
+	$url = "---"; //Pressreader Only
 
-	$iterable_csv_filename = './unmerged_csv/Iterable_PressReader_List' . $date_append . '.csv';
+	$iterable_csv_filename = './unmerged_csv/Iterable_PressReader_List_' . $date_append . '.csv';
 	create_csv_from_url($url, $iterable_csv_filename);
 
 	function create_csv_from_url ($url, $filename) {
@@ -34,8 +34,8 @@
 	$list_1 = './unmerged_csv/0_Processed_list_' . $date_append . '.csv';
 	$list_2 = './unmerged_csv/1_Processed_list_' . $date_append . '.csv';
 	$list_3 = './unmerged_csv/2_Processed_list_' . $date_append . '.csv';
-	$list_4 = './unmerged_csv/2_Processed_list_' . $date_append . '.csv';
-	$final_list = './merged_csv/SA_Newspaperalert_subscribers_' . $date_append . '.csv';
+	$list_4 = $iterable_csv_filename;
+	$final_list = './merged_csv/HSA_newspaperalerts_ACTIVE_' . $date_append . '.csv';
 
 
 	function joinFiles(array $files, $result) {
@@ -58,8 +58,31 @@
 		unset($wH);
 	}
 
-	joinFiles(array($list_1, $list_2, $list_3, $list_4), $final_list);
+	$all_list = array($list_1, $list_2, $list_3, $list_4);
+	joinFiles($all_list, $final_list);
+	print_pre($final_list);
 
+
+	$cleansed_emails = array();
+	function filter_unique_emails ($csv_filename){
+		if (($handle = fopen($csv_filename, "r")) !== FALSE) {
+			global $cleansed_emails;
+			echo "fopen";
+			$row = 0;
+			$unfiltered_list = array();
+			while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+			    $num = count($data);
+			    $row++;
+			    for ($c=0; $c < $num; $c++) {	    	
+			    	$unfiltered_list[] = $data[$c];
+			    	$cleansed_emails = array_unique($unfiltered_list);
+		    	}
+			}
+		  fclose($handle);
+		}
+	}
+	filter_unique_emails($final_list);
+	print_pre($cleansed_emails);
 
 	$time_end = microtime(true);
 	$time = ($time_end - $time_start)/60;
