@@ -64,6 +64,7 @@
 		$total_final_email_list = count($processed_emails);
 		echo "<br>PROCESSED EMAILS total count : $total_final_email_list<br>"; 
 		create_csv_from_array($processed_email_filename, $processed_emails);
+		create_csv_from_array($failed_email_filename, $failed_emails);
 	}
 
 
@@ -124,7 +125,7 @@ function array_not_unique($raw_array) {
 		print_pre($sections);
 		$tot_sec = (count($sections))-1;
 		echo "<br>This is section $section_number out of $tot_sec<br>";
-		// print_pre($sections);
+		print_pre($sections);
 		$section_emails =  $sections[$section_number];
 		$tot_section_emails = count($section_emails);
 		echo "<br>This is total section emails : $tot_section_emails<br>";
