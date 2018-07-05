@@ -9,7 +9,7 @@
 	error_reporting( E_ALL );
 	date_default_timezone_set("Pacific/Honolulu");
 	$date_append = date("Ymd");
-	// $date_append = "20180621";
+	// $date_append = "20180626";
 
 	function print_pre($object) {
 		?><pre><?php print_r($object); ?></pre><?php
@@ -17,9 +17,10 @@
 
 	$time_start = microtime(true);
 	$login = array(
-
+	    
+	    )
 	);
-	$url = ""; //Pressreader Only
+	$url = "-"; //Pressreader Only
 	$pressreader_csv_filename = './unmerged_csv/Iterable_PressReader_List_' . $date_append . '.csv';
 	$list_1 = './unmerged_csv/0_Processed_list_' . $date_append . '.csv';
 	$list_2 = './unmerged_csv/1_Processed_list_' . $date_append . '.csv';
@@ -28,17 +29,17 @@
 	$list_5 = './unmerged_csv/4_Processed_list_' . $date_append . '.csv';
 	$list_6 = './unmerged_csv/5_Processed_list_' . $date_append . '.csv';
 	$list_7 = './unmerged_csv/6_Processed_list_' . $date_append . '.csv';
-	$list_8 = './unmerged_csv/7_Processed_list_' . $date_append . '.csv';
+/*	$list_8 = './unmerged_csv/7_Processed_list_' . $date_append . '.csv';
 	$list_9 = './unmerged_csv/8_Processed_list_' . $date_append . '.csv';
 	$list_10 = './unmerged_csv/9_Processed_list_' . $date_append . '.csv';
 	$list_11 = './unmerged_csv/10_Processed_list_' . $date_append . '.csv';
-	$list_12 = './unmerged_csv/11_Processed_list_' . $date_append . '.csv';
+	$list_12 = './unmerged_csv/11_Processed_list_' . $date_append . '.csv';*/
 	$pressreader_list = $pressreader_csv_filename;
 	$merged_list = './merged_csv/unfiltered_HSA_newspaperalerts_ACTIVE_' . $date_append . '.csv';
 	$cleansed_emails = array();
 	$unfiltered_list = array();
 	$final_list = './merged_csv/HSA_newspaperalerts_ACTIVE_' . $date_append . '.csv';
-	$all_list = array($list_1, $list_2, $list_3, $list_4, $list_5, $list_6, $list_7, $list_8, $list_9, $list_10, $list_11, $list_12, $pressreader_list);
+	$all_list = array($list_1, $list_2, $list_3, $list_4, $list_5, $list_6, $list_7, $pressreader_list);
 
 //	create pressReader csv
 	create_csv_from_url($url, $pressreader_csv_filename);
@@ -47,12 +48,9 @@
 //filter duplicate emails
 	filter_duplicate_emails($merged_list);
 //	Create final list 
-	$cleansed_emails = array_unique($unfiltered_list);
 	create_csv_from_array($final_list, $cleansed_emails);
 //	Import the file to Tecnavia
-
-	// ftpFile("ftp.ta.newsmemory.com", $final_list);
-
+	ftpFile("ftp.ta.newsmemory.com", $final_list);
 
 
 	function create_csv_from_url ($url, $filename) {
@@ -96,6 +94,7 @@
 			}
 		  fclose($handle);
 		}
+		$cleansed_emails = array_unique($unfiltered_list);
 	}
 	echo "number of UNFILTERED EMAILS:<br>";
 	print_pre(count($unfiltered_list));
